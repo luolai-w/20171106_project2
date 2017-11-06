@@ -1,0 +1,7 @@
+#ignore object file
+*.[o]
+#ignore .swap file
+*~
+#ignore directory
+project_t/TemporaryObjs/
+
