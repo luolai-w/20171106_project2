@@ -46,6 +46,7 @@ class SGMainCtl
         SGMainCtl(const struct SvrArguments stSvrArgs);
         ~SGMainCtl();
         int Initialize();
+        int InitLua();
         int InitSignal();
         int LoadAllConfig();
         int StartServerNetwork();

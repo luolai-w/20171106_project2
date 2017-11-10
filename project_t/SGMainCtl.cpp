@@ -13,6 +13,7 @@
 #include "SGConfigReader.h"
 #include "SGLogicObjFactory.h"
 #include "SGObjectPool.h"
+#include "SGLuaEngine.h"
 
 enum{
     SIGNAL_NONE,
@@ -156,6 +157,13 @@ int SGMainCtl::Initialize()
     m_pGameHandler = GetGameHandle();
     if (!m_pGameHandler)
     {
+        iRet = InitLua();
+        if (iRet)
+        {
+            ERROR_LOG("InitLua failed:%d\n",iRet);
+            return -7;
+        }
+
         //return -3;
     }
 
@@ -170,7 +178,27 @@ int SGMainCtl::Initialize()
         }
     }
 
+
     iRet = InitSignal();
+
+    return 0;
+}
+
+int SGMainCtl::InitLua()
+{
+    int iRet = g_pLuaEngine->Initialize();
+    if (iRet)
+    {
+        ERROR_LOG("g_pLuaEngine->Initialize() failed:%d\n",iRet);
+        return -1;
+    }    
+
+    iRet = g_pLuaEngine->RunMainFile(g_pLocalConfig->m_acLuaMainPath,false);
+    if (iRet)
+    {
+        ERROR_LOG("g_pLuaEngine->RunMainFile(%s,false) failed:%d\n",g_pLocalConfig->m_acLuaMainPath,iRet);
+        return -2;
+    }
 
     return 0;
 }

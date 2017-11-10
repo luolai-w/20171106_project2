@@ -36,6 +36,7 @@ class SGLocalConfig
         int m_iServiceConnTimeout;
         int m_iGameConnCheckIntvl;
     
+        int m_iLuaTimeUpdateIntvl;
         char m_acLuaMainPath[MAX_FILE_NAME_LENGTH];
         char m_acLuaTimeModule[MAX_FILE_NAME_LENGTH];
         char m_acLuaTimeUpdateFunc[MAX_FILE_NAME_LENGTH];

@@ -5,6 +5,7 @@
 #include <cstring>
 #include "SGLogicObjFactory.h"
 #include "SGGameConnector.h"
+#include "SGLuaEngine.h"
 
 SGGameConnHandler::SGGameConnHandler()
 {
@@ -26,6 +27,19 @@ int SGGameConnHandler::Initialize()
         ERROR_LOG("g_pMainCtl->AddRoutineCheck failed got:%d\n",iRet);
     
         return -1;
+    }
+
+    iRet = g_pLuaEngine->Initialize();
+    if (iRet)
+    {
+        ERROR_LOG("g_pLuaEngine->Initialize() failed got:%d\n",iRet);
+        return -2;
+    }  
+
+    iRet = g_pLuaEngine->RunMainFile(g_pLocalConfig->m_acLuaMainPath,false);
+    if (iRet)
+    {
+        ERROR_LOG("g_pLuaEngine->RunMainFile(%s,false) failed:%d\n",g_pLocalConfig->m_acLuaMainPath,iRet);
     }
 
     return 0;

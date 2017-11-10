@@ -71,6 +71,7 @@ int SGLocalConfig::LoadConfig(bool bReload)
     confReader.GetKeyValue("SERVER","server_conn_timeout",m_iServiceConnTimeout,30);
     confReader.GetKeyValue("SERVER","game_conn_check_intvl",m_iGameConnCheckIntvl,10);
 
+    confReader.GetKeyValue("LUA","lua_time_update_intvl",m_iLuaTimeUpdateIntvl,1);
     confReader.GetKeyValue("LUA","lua_time_module",m_acLuaTimeModule,sizeof(m_acLuaTimeModule),"LTime");
     confReader.GetKeyValue("LUA","lua_time_update_function",m_acLuaTimeUpdateFunc,sizeof(m_acLuaTimeUpdateFunc),"Update");
 
@@ -88,6 +89,7 @@ int SGLocalConfig::TraceConfig()
     ANY_LOG("server_conn_check_intvl:%d\n",m_iServiceConnCheckIntvl);
     ANY_LOG("server_conn_timeout:%d\n",m_iServiceConnTimeout);
     ANY_LOG("game_conn_check_intvl:%d\n",m_iGameConnCheckIntvl);
+    ANY_LOG("lua_time_update_intvl:%d\n",m_iLuaTimeUpdateIntvl);
     ANY_LOG("lua_main_path:%s\n",m_acLuaMainPath);
     ANY_LOG("lua_time_module:%s\n",m_acLuaTimeModule);
     ANY_LOG("lua_time_update_function:%s\n",m_acLuaTimeUpdateFunc);

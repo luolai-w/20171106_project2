@@ -223,7 +223,16 @@ int SGEpollEventLoop::LoopOnce(int iTimeoutMS)
     int triggerNum = epoll_wait(m_iEpollFD, m_pstEpollEvent, m_iEpollEventSize,iTimeoutMS);    
     if (triggerNum < 0)
     {
+        
+
+        if (errno == EINTR)
+        {
+            ANY_LOG("epfd(%d) epoll_wait %d %d failed(%d):%d\n",m_iEpollFD, m_iEpollEventSize,iTimeoutMS,triggerNum,errno);       
+            return 0;//try again
+        }
+
         ERROR_LOG("epfd(%d) epoll_wait %d %d failed(%d):%d\n",m_iEpollFD, m_iEpollEventSize,iTimeoutMS,triggerNum,errno);       
+
         return -1;
     }
 

@@ -43,7 +43,7 @@ int SGLuaEngine::Initialize()
 
     m_pLuaState = L;
 
-    g_pMainCtl->AddRoutineCheck(RoutineLuaUpdate,this,1); 
+    g_pMainCtl->AddRoutineCheck(RoutineLuaUpdate,this,g_pLocalConfig->m_iLuaTimeUpdateIntvl); 
     return 0;
 }
 
@@ -116,7 +116,22 @@ int SGLuaEngine::RoutineLuaUpdate(void* pUserData)
 
     unsigned int uiNowTime = g_pMainCtl->GetGameTime();
     lua_getfield(L,LUA_GLOBALSINDEX,g_pLocalConfig->m_acLuaTimeModule);
+
+    if (!lua_istable(L,-1))
+    {
+        ERROR_LOG("get module %s failed\n",g_pLocalConfig->m_acLuaTimeModule);
+        lua_settop(L,0);
+        return -3;
+    }
+
     lua_getfield(L,-1,g_pLocalConfig->m_acLuaTimeUpdateFunc);
+    if (!lua_isfunction(L,-1))
+    {
+        ERROR_LOG("get function %s.%s failed\n",g_pLocalConfig->m_acLuaTimeModule,g_pLocalConfig->m_acLuaTimeUpdateFunc);    
+        lua_settop(L,0);
+        return -4;
+    }
+
     lua_pushinteger(L,uiNowTime);
 
     int iRet = lua_pcall(L,1,LUA_MULTRET,0);
@@ -124,7 +139,7 @@ int SGLuaEngine::RoutineLuaUpdate(void* pUserData)
     {
         ERROR_LOG("pcall %s.%s(%u) failed:%d(%s)\n",g_pLocalConfig->m_acLuaTimeModule,g_pLocalConfig->m_acLuaTimeUpdateFunc,uiNowTime,iRet,lua_tostring(L,-1));
         lua_settop(L,0);
-        return -3;
+        return -5;
     }  
 
     lua_settop(L,0);
