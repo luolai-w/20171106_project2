@@ -1,6 +1,8 @@
 #include "SGLuaGameLib.h"
 #include <sstream>
 #include "SGLogTrace.h"
+#include <dirent.h>
+#include <sys/types.h>
 //#include <stdio.h>
 
 
@@ -302,10 +304,73 @@ int IsBitSet(lua_State* L)
     return 0;
 }
 
+
+int GetPWD(lua_State* L)
+{
+    char acPath[255] = {0};
+    getcwd(acPath,sizeof(acPath));
+    lua_pushstring(L,acPath); 
+
+    return 1;
+}
+
+int ListDir(lua_State* L)
+{
+    if (lua_gettop(L) == 0 || !lua_isstring(L,1))
+    {
+        luaL_error(L,"invalid arguments, string expected!");
+        return 0;
+    }
+
+    const char* szPath = lua_tostring(L,1);
+
+    DIR *dirp = NULL;
+    dirp = opendir(szPath);
+    if ( dirp == NULL)
+    {
+        luaL_error(L,"opendir %s failed!",szPath);
+        return 0;
+    }
+
+
+    lua_newtable(L);
+    struct dirent *ent = NULL;
+    int iCount = 0;
+    while((ent = readdir(dirp)) != NULL)
+    {
+        if (strcmp(ent->d_name,".") && strcmp(ent->d_name,".."))
+        {
+            lua_newtable(L);
+            lua_pushstring(L,"name");
+            lua_pushstring(L,ent->d_name);
+            lua_settable(L,-3);
+
+            lua_pushstring(L,"type");
+            if (ent->d_type == DT_DIR)
+            {
+                lua_pushstring(L,"dir");
+            }else{
+                lua_pushstring(L,"file");
+            } 
+         
+            lua_settable(L,-3);
+
+            lua_rawseti(L,-2, ++iCount);
+        }
+
+    }
+
+    closedir(dirp);
+    
+    return 1;
+}
+
 static luaL_Reg lua_lib[] = {
     {"SetBitAt",SetBitAt},
     {"ClearBitAt",ClearBitAt},
     {"IsBitSet",IsBitSet},
+    {"GetPWD",GetPWD},
+    {"ListDir",ListDir},
     {NULL,NULL}
 };
 
